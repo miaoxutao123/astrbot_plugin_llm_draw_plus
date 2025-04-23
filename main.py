@@ -11,9 +11,10 @@ class MyPlugin(Star):
         # self.model = config.get("model")
         self.image_size = config.get("image_size")
         self.seed = config.get("seed")
+        
     @llm_tool(name="pic-gen")
-    async def pic_gen(self, event: AstrMessageEvent, prompt: str,model: str) -> str:
-        '''
+    async def pic_gen(self, event: AstrMessageEvent, prompt: str, model: str) -> str:
+        """
         When a user requires image generation or drawing, and asks you to create an image, or when you need to create a drawing to demonstrate or present something to the user,
         call this function. If the image description provided by the user is not in English, translate it into English and reformat it to facilitate generation by the stable-diffusion model. 
         Enrich the prompt with additional details to achieve better results, the more detailed the better. 
@@ -23,13 +24,19 @@ class MyPlugin(Star):
         Args:
         - prompt (string): image description  
         - model (string): model name (`black-forest-labs/FLUX.1-schnell` or `stabilityai/stable-diffusion-3-5-large`)
-        '''
+        """
+        # 确保从配置中正确加载
         api_key = self.api_key
-        model = model
         image_size = self.image_size
         seed = self.seed
+
+        # 如果 seed 为 0，设置为 None
         if seed == 0:
             seed = None
-        image_url, image_path = generate_image(prompt,api_key,model=model,image_size=image_size,seed=seed)
+
+        # 调用生成图像的函数
+        image_url, image_path = generate_image(prompt, api_key, model=model, image_size=image_size, seed=seed)
+
+        # 返回生成的图像
         chain = [Image.fromURL(image_url)]
         yield event.chain_result(chain)
