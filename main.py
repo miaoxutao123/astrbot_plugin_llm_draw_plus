@@ -1,21 +1,35 @@
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
-from astrbot.api.star import Context, Star, register
-from astrbot.api import logger
+from astrbot.api.all import *
+from astrbot.api.event import filter, AstrMessageEvent
+import requests
+from .ttp import generate_image
 
-@register("helloworld", "YourName", "一个简单的 Hello World 插件", "1.0.0")
+@register("pic-gen", "喵喵", "使用硅基流动api 让llm帮你画图", "0.0.2")
 class MyPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
-    
-    # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
-    @filter.command("helloworld")
-    async def helloworld(self, event: AstrMessageEvent):
-        '''这是一个 hello world 指令''' # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
-        user_name = event.get_sender_name()
-        message_str = event.message_str # 用户发的纯文本消息字符串
-        message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
-        logger.info(message_chain)
-        yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
+        self.api_key = config.get("api_key")
+        # self.model = config.get("model")
+        self.image_size = config.get("image_size")
+        self.seed = config.get("seed")
+    @llm_tool(name="pic-gen")
+    async def pic_gen(self, event: AstrMessageEvent, prompt: str,model: str) -> str:
+        '''
+        When a user requires image generation or drawing, and asks you to create an image, or when you need to create a drawing to demonstrate or present something to the user,
+        call this function. If the image description provided by the user is not in English, translate it into English and reformat it to facilitate generation by the stable-diffusion model. 
+        Enrich the prompt with additional details to achieve better results, the more detailed the better. 
+        Autonomously select the most suitable model based on the request: use `black-forest-labs/FLUX.1-schnell` for high-resolution images with rich details and a focus on anatomical precision,
+        and use `stabilityai/stable-diffusion-3-5-large` for realistic skin textures and diverse artistic styles. **Only these two models should be used**.
 
-    async def terminate(self):
-        '''可选择实现 terminate 函数，当插件被卸载/停用时会调用。'''
+        Args:
+        - prompt (string): image description  
+        - model (string): model name (`black-forest-labs/FLUX.1-schnell` or `stabilityai/stable-diffusion-3-5-large`)
+        '''
+        api_key = self.api_key
+        model = model
+        image_size = self.image_size
+        seed = self.seed
+        if seed == 0:
+            seed = None
+        image_url, image_path = generate_image(prompt,api_key,model=model,image_size=image_size,seed=seed)
+        chain = [Image.fromURL(image_url)]
+        yield event.chain_result(chain)

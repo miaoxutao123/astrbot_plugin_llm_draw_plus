@@ -1,0 +1,21 @@
+{
+    "api_key": {
+        "description": "API 密钥",
+        "type": "string",
+        "hint": "请前往  https://cloud.siliconflow.cn/i/I2f0E3Az  注册账号，并获取 API_Key",
+        "default": "API_Key",
+        "obvious_hint": true
+    },
+
+    "size": {
+        "description": "生成图片的分辨率",
+        "type": "string",
+        "default": "1024x1024",
+        "hint": "图片分辨率，格式为：宽x高，例如：1024x1024"
+    },
+    "seed": {
+        "description": "随机种子，0为随机",
+        "type": "int",
+        "default": 0
+    }
+}
