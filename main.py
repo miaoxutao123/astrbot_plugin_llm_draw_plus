@@ -15,15 +15,19 @@ class MyPlugin(Star):
     @llm_tool(name="pic-gen")
     async def pic_gen(self, event: AstrMessageEvent, prompt: str, model: str) -> str:
         """
-        When a user requires image generation or drawing, and asks you to create an image, or when you need to create a drawing to demonstrate or present something to the user,
-        call this function. If the image description provided by the user is not in English, translate it into English and reformat it to facilitate generation by the stable-diffusion model. 
-        Enrich the prompt with additional details to achieve better results, the more detailed the better. 
-        Autonomously select the most suitable model based on the request: use `black-forest-labs/FLUX.1-schnell` for high-resolution images with rich details and a focus on anatomical precision,
+        When a user requires image generation or drawing, and asks you to create an image, 
+        or when you need to create a drawing to demonstrate or present something to the user, 
+        call this function. If the image description provided by the user is not in English,
+        translate it into English and reformat it to facilitate generation by the stable-diffusion model.
+        **Autonomously enrich the prompt with additional details to achieve better results**,
+        focusing on clarity, specificity, and context, without asking the user for further requirements.
+        Autonomously select the most suitable model based on the request: 
+        use `black-forest-labs/FLUX.1-schnell` for high-resolution images with rich details and a focus on anatomical precision,
         and use `stabilityai/stable-diffusion-3-5-large` for realistic skin textures and diverse artistic styles. **Only these two models should be used**.
 
-        Args:
-        - prompt (string): image description  
-        - model (string): model name (`black-forest-labs/FLUX.1-schnell` or `stabilityai/stable-diffusion-3-5-large`)
+        Args:  
+        - prompt (string): Image description provided by the user, which will be enriched autonomously.  
+        - model (string): Model name (`black-forest-labs/FLUX.1-schnell` or `stabilityai/stable-diffusion-3-5-large`).
         """
         # 确保从配置中正确加载
         api_key = self.api_key
