@@ -5,7 +5,7 @@ from .ttp import generate_image
 
 @register("pic-gen", "喵喵", "使用硅基流动api 让llm帮你画图", "0.0.2")
 class MyPlugin(Star):
-    def __init__(self, context: Context):
+    def __init__(self, context: Context,config: dict):
         super().__init__(context)
         self.api_key = config.get("api_key")
         # self.model = config.get("model")
