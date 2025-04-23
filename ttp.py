@@ -53,6 +53,6 @@ if __name__ == "__main__":
         "wearing a stylish outfit, standing in a serene forest with soft sunlight, "
         "detailed fur texture, expressive eyes, and a gentle smile."
     )
-    api_key = "sk-ouhvzvowcvprcvfimnewjfvdarglryfdxhyrarshxzkzuqxx"
+    api_key = "不告诉你"
     image_url, image_path = generate_image(prompt, api_key, model="black-forest-labs/FLUX.1-schnell")
     print(f"Image URL: {image_url}, Image Path: {image_path}")
