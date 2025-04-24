@@ -26,8 +26,8 @@ class MyPlugin(Star):
         and use `stabilityai/stable-diffusion-3-5-large` for realistic skin textures and diverse artistic styles. **Only these two models should be used**.
 
         Args:  
-        - prompt (string): Image description provided by the user, which will be enriched autonomously.  
-        - model (string): Model name (`black-forest-labs/FLUX.1-schnell` or `stabilityai/stable-diffusion-3-5-large`).
+            prompt (string): Image description provided by the user, which will be enriched autonomously.  
+            model (string): Model name (`black-forest-labs/FLUX.1-schnell` or `stabilityai/stable-diffusion-3-5-large`).
         """
         # 确保从配置中正确加载
         api_key = self.api_key
