@@ -96,7 +96,7 @@ class MyPlugin(Star):
         """
     
         comfyui_endpoint = self.comfyui_endpoint
-        workflow_file = "data/plugins/astrbot_plugin_llm_draw_plus/workflow/muicic/ace_step.json"
+        workflow_file = "data/plugins/astrbot_plugin_llm_draw_plus/wrokflow/music/ace_step.json"
 
         music_gen_path =await generate_audio(tags, lyrics, duration, comfyui_endpoint, workflow_file)
         if self.nap_server_address != "localhost":

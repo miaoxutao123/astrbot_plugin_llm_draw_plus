@@ -110,4 +110,4 @@ if __name__ == "__main__":
     [zh]zaizhewujin4deye4wan3,wo3zong3neng2zhao3dao4ni3
     """
     duration = 180  # 设置音频时长为 300 秒（5 分钟）
-    asyncio.run(generate_audio(tags, lyrics, duration))
+    asyncio.run(generate_audio(tags, lyrics, duration, comfyui_endpoint, workflow_file))
