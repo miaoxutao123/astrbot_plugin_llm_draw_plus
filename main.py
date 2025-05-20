@@ -3,6 +3,7 @@ from astrbot.api.event import filter, AstrMessageEvent
 from .ttp import generate_image
 from .music_gen_test import generate_audio
 from .file_send_server import send_file
+import subprocess
 
 @register("pic-gen", "喵喵", "使用硅基流动api 让llm帮你画图", "0.0.2")
 class MyPlugin(Star):
@@ -106,8 +107,14 @@ class MyPlugin(Star):
         workflow_file = "data/plugins/astrbot_plugin_llm_draw_plus/wrokflow/music/ace_step.json"
 
         music_gen_path =await generate_audio(tags, lyrics, duration, comfyui_endpoint, workflow_file)
+        # 使用ffmpeg将MP3格式转换为WAV格式
+        wav_path = music_gen_path.replace(".mp3", ".wav")
+        subprocess.run(["ffmpeg", "-i", music_gen_path, wav_path], check=True)
+
+        # 更新路径为WAV文件路径
+        music_gen_path = wav_path
         if self.nap_server_address != "localhost":
             nap_file_path = await send_file(music_gen_path, HOST=self.nap_server_address, PORT=self.nap_server_port)
                     
-        chain = [Record(file = nap_file_path)]
-        yield event.chain_result(chain)
+
+        Comp.Record(file=nap_file_path)
