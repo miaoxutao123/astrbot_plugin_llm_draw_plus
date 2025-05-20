@@ -1,7 +1,8 @@
 from astrbot.api.all import *
 from astrbot.api.event import filter, AstrMessageEvent
-import requests
 from .ttp import generate_image
+from .music_gen_test import generate_audio
+from .file_send_server import send_file
 
 @register("pic-gen", "喵喵", "使用硅基流动api 让llm帮你画图", "0.0.2")
 class MyPlugin(Star):
@@ -11,7 +12,9 @@ class MyPlugin(Star):
         # self.model = config.get("model")
         self.image_size = config.get("image_size")
         self.seed = config.get("seed")
-        
+        self.comfyui_endpoint = config.get("comfyui_endpoint")
+        self.nap_server_address = config.get("nap_server_address")
+        self.nap_server_port = config.get("nap_server_port")
     @llm_tool(name="pic-gen")
     async def pic_gen(self, event: AstrMessageEvent, prompt: str, model: str) -> str:
         """
@@ -43,4 +46,61 @@ class MyPlugin(Star):
 
         # 返回生成的图像
         chain = [Image.fromURL(image_url)]
+        yield event.chain_result(chain)
+
+    @llm_tool(name="music-gen")
+    async def music_gen(self, event: AstrMessageEvent,tags: str, lyrics: str, duration: int) -> str:
+        """
+        When a user needs to generate music, you should call this function to complete the audio generation task. If the information provided by the user is vague, you should generate the required content on your own without asking the user again. If the user provides relevant information, you should strictly generate the parameters in the above format to ensure that the structure of the tags and lyrics is clear and meets the requirements. This function interacts with the ComfyUI server, submitting the workflow for audio generation. It modifies the workflow to include the provided tags, lyrics, and duration, and then submits it to the ComfyUI server. The function will poll the server to check the status of the task and wait for the audio generation to be completed. After the task is completed, it retrieves the information of the generated audio file.
+        Parameters:
+        tags (str): A list of tags used to describe the style, scene, instruments, vocal types, or professional terms of the music, separated by English commas.
+        Examples:
+        - Music styles: pop, electronic, rock, soul, cyberpunk
+        - Scene types: background music for parties, radio broadcasts, workout playlists
+        - Instrument elements: saxophone, piano, violin
+        - Vocal types: female voice, male voice, clean vocals
+        - Professional terms: 110 bpm, fast tempo, acoustic guitar
+        lyrics (str): The lyrics of the audio, supporting multi-language input. The lyrics can include structural tags (such as [verse], [chorus], [bridge], etc.) and language tags (such as [zh] for Chinese, [ko] for Korean, [es] for Spanish, [fr] for French).
+        If it is instrumental music, you can also input the names of the instruments.
+        Example:
+        [verse]
+        [zh]wo3zou3guo4shen1ye4de5jie1dao4
+        [zh]leng3feng1chui1luan4si1nian4de5piao4liang4wai4tao4
+        [verse]
+        [ko]hamkke si-kkeuleo-un sesang-ui sodong-eul pihae
+        [ko]honja ogsang-eseo dalbich-ui eolyeompus-ileul balaboda
+        [bridge]
+        [es]cantar mi anhelo por ti sin ocultar
+        [es]como poesía y pintura, lleno de anhelo indescifrable
+        [chorus]
+        [fr]que tu sois le vent qui souffle sur ma main
+        [fr]un contact chaud comme la douce pluie printanière
+        [intro] (intro)
+        [verse] (verse)
+        [pre-chorus] (pre-chorus)
+        [chorus] (chorus)
+        [bridge] (bridge)
+        [outro] (outro)
+        [hook] (hook)
+        [refrain] (refrain)
+        [interlude] (interlude)
+        [breakdown] (breakdown)
+        [ad-lib] (ad-lib)
+        duration (int): The desired duration of the generated audio (in seconds). The large model will automatically set the duration based on the requirements, with a maximum of three minutes (180 seconds).
+        comfyui_endpoint (str): The URL of the ComfyUI server endpoint.
+        workflow_file (str): The path to the workflow file used for audio generation.
+        Note:
+        This function assumes that the ComfyUI server is running and can be accessed through the specified endpoint.
+        The workflow file should be correctly formatted and compatible with the ComfyUI server.
+        The language tags in the lyrics should match the supported languages; otherwise, the generated results may not meet expectations.
+        """
+    
+        comfyui_endpoint = self.comfyui_endpoint
+        workflow_file = "data/plugins/astrbot_plugin_llm_draw_plus/workflow/muicic/ace_step.json"
+
+        music_gen_path =await generate_audio(tags, lyrics, duration, comfyui_endpoint, workflow_file)
+        if self.nap_server_address != "localhost":
+            nap_file_path = await send_file(music_gen_path, HOST=self.nap_server_address, PORT=self.nap_server_port)
+                    
+        chain = [Record(file = nap_file_path)]
         yield event.chain_result(chain)

@@ -51,12 +51,14 @@ async def generate_image(prompt, api_key, model="stabilityai/stable-diffusion-3-
 
 
 if __name__ == "__main__":
-    # Example call
-    prompt = (
-        "A cute catgirl with blue hair, realistic and anthropomorphic, "
-        "wearing a stylish outfit, standing in a serene forest with soft sunlight, "
-        "detailed fur texture, expressive eyes, and a gentle smile."
-    )
-    api_key = ""
-    image_url, image_path = generate_image(prompt, api_key, model="black-forest-labs/FLUX.1-schnell")
-    print(f"Image URL: {image_url}, Image Path: {image_path}")
+    async def main():
+        prompt = (
+            "A cute catgirl with blue hair, realistic and anthropomorphic, "
+            "wearing a stylish outfit, standing in a serene forest with soft sunlight, "
+            "detailed fur texture, expressive eyes, and a gentle smile."
+        )
+        api_key = "sk-yxphdunmuqhhjmfjdgurowzwhgsrviscbclvnjwklxhdafza"
+        image_url, image_path = await generate_image(prompt, api_key, model="black-forest-labs/FLUX.1-schnell")
+        print(f"Image URL: {image_url}, Image Path: {image_path}")
+
+    asyncio.run(main())
