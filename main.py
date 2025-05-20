@@ -52,7 +52,9 @@ class MyPlugin(Star):
     async def music_gen(self, event: AstrMessageEvent,tags: str, lyrics: str, duration: int) -> str:
         """
         When a user needs to generate music, you should call this function to complete the audio generation task. If the information provided by the user is vague, you should generate the required content on your own without asking the user again. If the user provides relevant information, you should strictly generate the parameters in the above format to ensure that the structure of the tags and lyrics is clear and meets the requirements. This function interacts with the ComfyUI server, submitting the workflow for audio generation. It modifies the workflow to include the provided tags, lyrics, and duration, and then submits it to the ComfyUI server. The function will poll the server to check the status of the task and wait for the audio generation to be completed. After the task is completed, it retrieves the information of the generated audio file.
+        
         Parameters:
+        *,
         tags (str): A list of tags used to describe the style, scene, instruments, vocal types, or professional terms of the music, separated by English commas.
         Examples:
         - Music styles: pop, electronic, rock, soul, cyberpunk
@@ -60,8 +62,10 @@ class MyPlugin(Star):
         - Instrument elements: saxophone, piano, violin
         - Vocal types: female voice, male voice, clean vocals
         - Professional terms: 110 bpm, fast tempo, acoustic guitar
+        
         lyrics (str): The lyrics of the audio, supporting multi-language input. The lyrics can include structural tags (such as [verse], [chorus], [bridge], etc.) and language tags (such as [zh] for Chinese, [ko] for Korean, [es] for Spanish, [fr] for French).
         If it is instrumental music, you can also input the names of the instruments.
+        When generating Chinese lyrics, strictly follow the given example and use a pinyin-like format for the lyrics.
         Example:
         [verse]
         [zh]wo3zou3guo4shen1ye4de5jie1dao4
@@ -86,9 +90,12 @@ class MyPlugin(Star):
         [interlude] (interlude)
         [breakdown] (breakdown)
         [ad-lib] (ad-lib)
+        
         duration (int): The desired duration of the generated audio (in seconds). The large model will automatically set the duration based on the requirements, with a maximum of three minutes (180 seconds).
+        
         comfyui_endpoint (str): The URL of the ComfyUI server endpoint.
         workflow_file (str): The path to the workflow file used for audio generation.
+        
         Note:
         This function assumes that the ComfyUI server is running and can be accessed through the specified endpoint.
         The workflow file should be correctly formatted and compatible with the ComfyUI server.
